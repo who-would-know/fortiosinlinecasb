@@ -2,19 +2,42 @@ import requests
 import urllib3
 import json
 import csv
+import sys
+
 
 # Disable SSL certificate warnings
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+### UPDATE FOR YOUR ENVIRONMENT ###
 HOST_IP = "1.1.1.1"
+API_TOKEN = "xxxx"
+##################################
+
 BASE_URL = "https://" + HOST_IP + "/api/v2/"
-API_TOKEN = "xxxxxx"
 
 HEADERS = {
     "Accept": "application/json",
     "Authorization": f"Bearer {API_TOKEN}"
 }
 
+def verify_login():
+    '''
+    Verifies the API token and host by calling a simple status endpoint.
+    Returns True if valid, False otherwise.
+    '''
+    url = BASE_URL + "monitor/system/status"
+    try:
+        response = requests.get(url, headers=HEADERS, verify=False)
+        if response.status_code == 200:
+            print("Login successful.")
+            return True
+        else:
+            print(f"Login failed: {response.status_code} - {response.text}")
+            return False
+    except requests.exceptions.RequestException as e:
+        print(f"Request error during login verification: {e}")
+        return False
+    
 def print_json(data):
     '''Pretty-print a dictionary or JSON-like object.'''
     print(json.dumps(data, indent=4))
@@ -102,6 +125,9 @@ def print_csv_to_file(casb_output, filename="casb_output.csv"):
 
 def main():
     ''' The main function/program '''
+    if not verify_login():
+        sys.exit("Login failed. Please check HOST_IP or API_TOKEN.")
+
     # result = get_casb_saas_app()
     # if result:
     #     print_json(result)
