@@ -5,6 +5,7 @@
 This script requires the following Python libraries:
 
 - `requests`
+- `sys`
 - `urllib3` (usually installed as a dependency of `requests`)
 - `json` (built-in, no installation needed)
 - `csv` (built-in, no installation needed)
